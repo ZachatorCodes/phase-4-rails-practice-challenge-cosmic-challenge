@@ -12,7 +12,7 @@ class PlanetsController < ApplicationController
     render json: planet, status: :ok, serializer: :PlanetSerializer
   end
 
-  def create
+  def create 
     planet = Planet.create!(planet_params)
     render json: planet, status: :created
   end
