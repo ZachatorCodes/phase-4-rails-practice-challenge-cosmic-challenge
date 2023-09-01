@@ -1,5 +1,7 @@
 class PlanetsController < ApplicationController
   before_action :set_planet, only: %i[ show update destroy ]
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
+  rescue_from ActiveRecord::RecordInvalid, with: :render_invalid_record_response
 
   # GET /planets
   def index
@@ -41,6 +43,14 @@ class PlanetsController < ApplicationController
 
   def find_planet
     Planet.find(params[:id])
+  end
+
+  def render_not_found_response
+    render json: { error: "Planet not found" }, status: :not_found
+  end
+
+  def render_invalid_record_response(exception)
+    render json: {errors: exception.record.errors.full_messages}, status: :unprocessable_entity
   end
 
 end
