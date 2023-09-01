@@ -1,4 +1,6 @@
 class ScientistsController < ApplicationController
+    rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
+    rescue_from ActiveRecord::RecordInvalid, with: :render_invalid_record_response
 
     before_action :one_scientist, only: [:show, :update, :destroy]
 
@@ -29,7 +31,7 @@ class ScientistsController < ApplicationController
     private
 
     def one_scientist
-        @scientist = Scientists.find(params[:id])
+        @scientist = Scientist.find(params[:id])
     end
 
     def scientist_params
@@ -38,5 +40,13 @@ class ScientistsController < ApplicationController
 
     def scientist_params_update
         params.permit(:name, :field_of_study, :avatar)
+    end
+
+    def render_not_found_response
+        render json: { error: "Scientist not found" }, status: :not_found
+    end
+
+    def render_invalid_record_response(exception)
+        render json: {errors: exception.record.errors.full_messages}, status: :unprocessable_entity
     end
 end
